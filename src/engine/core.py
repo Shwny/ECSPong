@@ -3,11 +3,12 @@ import esper
 import sys
 import random
 
-from components.components import Position, RenderableRectangle, Color, Inputs, Velocity, Direction, CurrentDirection
+from components.components import Position, RenderableRectangle, Color, Inputs, Velocity, Direction, CurrentDirection, Event
 from processors.renderable_rectangle_processor import RenderableRectangleProcessor
 from processors.player_movement_processor import PlayerMovementProcessor
 from processors.inputs_processor import InputsProcessor
 from processors.ball_movement_processor import BallMovementProcessor
+from processors.ball_collision_processor import BallCollisionProcessor
 
 class Engine:
 
@@ -31,7 +32,7 @@ class Engine:
         self._fps_clock: pygame.Clock = pygame.time.Clock()
         self._fps: int = 60
 
-    # GAME EXECTION
+    # GAME EXECUTION
 
     def run(self) -> None:
 
@@ -72,11 +73,13 @@ class Engine:
         player_movement_processor = PlayerMovementProcessor(player_entity = player, inputs = inputs)
         renderable_rectangle_processor = RenderableRectangleProcessor(screen = self._screen)
         ball_movement_processor = BallMovementProcessor(ball)
-
+        ball_collision_processor = BallCollisionProcessor(ball, player, enemy)
 
         # EVENTS
 
         # TODO: add event configuration for collision managment
+        esper.set_handler(Event.ball_horizontal_collision, ball_movement_processor.invert_ball_horizontal_direction)
+        esper.set_handler(Event.ball_vertical_collision, ball_movement_processor.invert_ball_vertical_direction)
 
         # GAME LOOP
 
@@ -90,8 +93,10 @@ class Engine:
 
             input_processor.process()
             player_movement_processor.process()
-            renderable_rectangle_processor.process()
             ball_movement_processor.process()
+            ball_collision_processor.process()
+
+            renderable_rectangle_processor.process()
             
   
             pygame.display.flip()

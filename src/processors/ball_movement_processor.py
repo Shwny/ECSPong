@@ -26,17 +26,24 @@ class BallMovementProcessor(esper.Processor):
             ball_position_component.x += ball_velocity_component.value
         elif ball_direction_component.horizontal_value == Direction.left:
             ball_position_component.x -= ball_velocity_component.value
-        
-        if ball_position_component.y <= 0 or ball_position_component.y >= 350:
-            if ball_direction_component.vertical_value == Direction.up:
-                ball_direction_component.vertical_value = Direction.down
 
-            elif ball_direction_component.vertical_value == Direction.down:
-                ball_direction_component.vertical_value = Direction.up
-                
-        if ball_position_component.x <= 0 or ball_position_component.x >= 630:
-            if ball_direction_component.horizontal_value == Direction.right:
-                ball_direction_component.horizontal_value = Direction.left
+    def invert_ball_horizontal_direction(self) -> None:
+        ball_direction_component = esper.try_component(self._ball_entity, CurrentDirection)
 
-            elif ball_direction_component.horizontal_value == Direction.left:
-                ball_direction_component.horizontal_value = Direction.right
+        assert(ball_direction_component != None) 
+
+        if ball_direction_component.horizontal_value == Direction.right:
+            ball_direction_component.horizontal_value = Direction.left
+        elif ball_direction_component.horizontal_value == Direction.left:
+            ball_direction_component.horizontal_value = Direction.right
+    
+    def invert_ball_vertical_direction(self) -> None:
+        ball_direction_component = esper.try_component(self._ball_entity, CurrentDirection)
+
+        assert(ball_direction_component != None) 
+
+        if ball_direction_component.vertical_value == Direction.up:
+            ball_direction_component.vertical_value = Direction.down
+        elif ball_direction_component.vertical_value == Direction.down:
+            ball_direction_component.vertical_value = Direction.up
+            

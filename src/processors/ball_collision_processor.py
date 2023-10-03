@@ -1,8 +1,7 @@
 import random
 import esper
 from engine.utils import util_rectangle_collide_check
-from engine.utils import Event
-from components.components import Position, RenderableRectangle
+from components.components import Position, RenderableRectangle, Event
 
 class BallCollisionProcessor(esper.Processor):
 
@@ -29,17 +28,30 @@ class BallCollisionProcessor(esper.Processor):
         assert(player_rectangle != None)
         assert(enemy_rectangle != None)
 
-        check_ball_player_collision: bool = util_rectangle_collide_check(ball_position_component, 
-                                                                         ball_rectangle, 
-                                                                         player_position_component, 
-                                                                         player_rectangle)
-        
-        check_ball_enemy_collision: bool = util_rectangle_collide_check(ball_position_component, 
-                                                                         ball_rectangle, 
-                                                                         enemy_position_component, 
-                                                                         enemy_rectangle)
-        
-        if check_ball_enemy_collision or check_ball_player_collision:
-            esper.dispatch_event(Event.BALL_COLLISION, )
-        
+        # Check for borders collision
+        if ball_position_component.y < 0 or ball_position_component.y > 350:
+            esper.dispatch_event(Event.ball_vertical_collision)
+
+        if ball_position_component.x < 0 or ball_position_component.x > 630:
+            esper.dispatch_event(Event.ball_horizontal_collision)
+
+        # TODO: implement the ball collision behaviour, properly
+        # 1 - check for collisions between entities
+        ball_player_collision_check: bool = util_rectangle_collide_check(ball_position_component, ball_rectangle, player_position_component, player_rectangle)
+        # 2 - adjust position for ball when collision is detected
+        # 3 - check for new position relative to the considered entity and modify ball movement accordingly
+        if ball_player_collision_check:
+            if ball_position_component.x < player_position_component.x:
+                ball_position_component.x = player_position_component.x - ball_rectangle.w
+                esper.dispatch_event(Event.ball_horizontal_collision)
+            elif ball_position_component.x > player_position_component.x:
+                ball_position_component.x = player_position_component.x + player_rectangle.w
+                esper.dispatch_event(Event.ball_horizontal_collision)
+
+            if ball_position_component.y < player_position_component.y:
+                ball_position_component.y = player_position_component.y - player_rectangle.y
+                esper.dispatch_event(Event.ball_vertical_collision)
+            elif ball_position_component.y > player_position_component.y:
+                ball_position_component.y = player_position_component.y + ball_rectangle.y
+                esper.dispatch_event(Event.ball_vertical_collision)
         

@@ -4,12 +4,8 @@ from dataclasses import dataclass as component
 # ENUMS 
 
 class Event(Enum):
-    BALL_COLLISION = 0
-
-class CollisionAxis(Enum):
-    HORIZONTAL = 0
-    VERTICAL = 1 
-    BOTH = 3
+    ball_horizontal_collision = 1
+    ball_vertical_collision = 2
 
 class Direction(Enum):
     none = None
