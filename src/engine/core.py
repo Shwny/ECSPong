@@ -74,7 +74,9 @@ class Engine:
         renderable_rectangle_processor = RenderableRectangleProcessor(screen = self._screen)
         ball_movement_processor = BallMovementProcessor(ball)
         ball_collision_processor = BallCollisionProcessor(ball, player, enemy)
+        player_movement_processor = PlayerMovementProcessor(player_entity = player, inputs_entity = inputs)
 
+        input_processor = InputsProcessor(inputs_entity = inputs)
         # EVENTS
 
         # TODO: add event configuration for collision managment

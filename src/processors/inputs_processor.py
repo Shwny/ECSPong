@@ -4,13 +4,13 @@ from components.components import Inputs
 
 class InputsProcessor(esper.Processor):
 
-    def __init__(self, inputs):
+    def __init__(self, inputs_entity):
         super().__init__()
-        self._inputs = inputs
+        self._inputs_entity = inputs_entity
 
     def process(self):
         pressed_keys = pygame.key.get_pressed()
-        input_component = esper.try_component(self._inputs, Inputs)
+        input_component = esper.try_component(self._inputs_entity, Inputs)
         assert(input_component != None)
         
         if pressed_keys[pygame.K_UP]:

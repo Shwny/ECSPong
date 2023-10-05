@@ -3,15 +3,15 @@ from components.components import Position, Inputs, Velocity
 
 class PlayerMovementProcessor(esper.Processor):
 
-    def __init__(self, player_entity, inputs):
+    def __init__(self, player_entity, inputs_entity):
         super().__init__()
         self._player_entity = player_entity
-        self._inputs = inputs
+        self._inputs_entity = inputs_entity
 
     def process(self):
         player_position_component = esper.try_component(self._player_entity, Position)
         player_velocity_component = esper.try_component(self._player_entity, Velocity)
-        inputs_component = esper.try_component(self._inputs, Inputs)
+        inputs_component = esper.try_component(self._inputs_entity, Inputs)
         
         assert(player_position_component != None)
         assert(player_velocity_component != None)
