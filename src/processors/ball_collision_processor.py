@@ -1,7 +1,7 @@
-import random
+import logging
 import esper
-from engine.utils import util_rectangle_collide_check
 from components.components import Position, RenderableRectangle, Event
+from engine.utils import util_rectangle_collide_check
 
 class BallXCollisionProcessor(esper.Processor):
 
@@ -28,21 +28,19 @@ class BallXCollisionProcessor(esper.Processor):
         assert(player_rectangle != None)
         assert(enemy_rectangle != None)
 
-        # Check for borders collision
         if ball_position_component.x < 0 or ball_position_component.x > 630:
             esper.dispatch_event(Event.ball_horizontal_collision)
 
         ball_player_collision_check: bool = util_rectangle_collide_check(ball_position_component, ball_rectangle, player_position_component, player_rectangle)
         
         if ball_player_collision_check:
+            # Left-side collision
             if ball_position_component.x < player_position_component.x:
-                ball_position_component.x = player_position_component.x - ball_rectangle.w
-                esper.dispatch_event(Event.ball_horizontal_collision)
-                return
+                ball_position_component.x = player_position_component.x - ball_rectangle.w    
+            # Right-side collision
             elif ball_position_component.x > player_position_component.x:
                 ball_position_component.x = player_position_component.x + player_rectangle.w
-                esper.dispatch_event(Event.ball_horizontal_collision)
-                return
+            esper.dispatch_event(Event.ball_horizontal_collision)
             
 class BallYCollisionProcessor(esper.Processor):
 
@@ -69,20 +67,16 @@ class BallYCollisionProcessor(esper.Processor):
         assert(player_rectangle != None)
         assert(enemy_rectangle != None)
 
-        # Check for borders collision
         if ball_position_component.y < 0 or ball_position_component.y > 350:
             esper.dispatch_event(Event.ball_vertical_collision)
 
         ball_player_collision_check: bool = util_rectangle_collide_check(ball_position_component, ball_rectangle, player_position_component, player_rectangle)
         
-        # FIXME: something's wrong with the current behaviour of the vertical axis collision response
         if ball_player_collision_check:
+            # Bottom-side collision
             if ball_position_component.y < player_position_component.y:
-                ball_position_component.y = player_position_component.y - player_rectangle.h
-                esper.dispatch_event(Event.ball_vertical_collision)
-                return
-            
+                ball_position_component.y = player_position_component.y - ball_rectangle.h
+            # Top-side collision
             elif ball_position_component.y > player_position_component.y:
-                ball_position_component.y = player_position_component.y + ball_rectangle.h
-                esper.dispatch_event(Event.ball_vertical_collision)
-                return
+                ball_position_component.y = player_position_component.y + player_rectangle.h
+            esper.dispatch_event(Event.ball_vertical_collision)

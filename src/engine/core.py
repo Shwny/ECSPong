@@ -2,6 +2,7 @@ import pygame
 import esper
 import sys
 import random
+import logging
 
 from components.components import Position, RenderableRectangle, Color, Inputs, Velocity, Direction, CurrentDirection, Event
 from processors.renderable_rectangle_processor import RenderableRectangleProcessor
@@ -15,6 +16,9 @@ class Engine:
     # GAME INITIALIZATION
 
     def __init__(self):
+
+        # Logging configuration
+        logging.basicConfig(level = logging.DEBUG, format='%(asctime)s - %(message)s', datefmt='%d-%b-%y %H:%M:%S')
         
         # Pygame initialization
         pygame.init()
@@ -43,13 +47,13 @@ class Engine:
 
         player = esper.create_entity()
         esper.add_component(player, Position(10, 10))
-        esper.add_component(player, RenderableRectangle(50, 50)) # (10, 30)
+        esper.add_component(player, RenderableRectangle(10, 50))
         esper.add_component(player, Color(255, 255, 255))
         esper.add_component(player, Velocity(2))
 
         enemy = esper.create_entity()
         esper.add_component(enemy, Position(620, 10))
-        esper.add_component(enemy, RenderableRectangle(10, 30))
+        esper.add_component(enemy, RenderableRectangle(10, 50))
         esper.add_component(enemy, Color(255, 255, 255))
         esper.add_component(enemy, Velocity(2))
 
@@ -57,7 +61,7 @@ class Engine:
         esper.add_component(ball, Position(315, 175))
         esper.add_component(ball, RenderableRectangle(10, 10))
         esper.add_component(ball, Color(255, 255, 255))
-        esper.add_component(ball, Velocity(3))
+        esper.add_component(ball, Velocity(4))
         random_value_for_vertical_direction: Direction = random.choice([Direction.up, Direction.down])
         random_value_for_horizontal_direction: Direction = random.choice([Direction.left, Direction.right])
         esper.add_component(ball, CurrentDirection(horizontal_value = random_value_for_horizontal_direction, vertical_value = random_value_for_vertical_direction))
