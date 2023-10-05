@@ -1,4 +1,4 @@
-from components.components import Position, RenderableRectangle
+from components.components import Position, RenderableRectangle, Event
 
 # FUNCTIONS
 
@@ -19,3 +19,14 @@ def util_rectangle_collide_check(entity1_position: Position,
         return True
                 
     return False
+
+def util_handle_horizontal_collision(entity1_position: Position, 
+                                entity1_dimensions: RenderableRectangle,
+                                entity2_position: Position,
+                                entity2_dimensions: RenderableRectangle) -> None:
+    # Bottom-side collision
+    if entity1_position.y < entity2_position.y:
+        entity1_position.y = entity2_position.y - entity1_dimensions.h
+    # Top-side collision
+    elif entity1_position.y > entity2_position.y:
+        entity1_position.y = entity2_position.y + entity2_dimensions.h
