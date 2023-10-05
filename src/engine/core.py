@@ -7,8 +7,8 @@ from components.components import Position, RenderableRectangle, Color, Inputs, 
 from processors.renderable_rectangle_processor import RenderableRectangleProcessor
 from processors.player_movement_processor import PlayerMovementProcessor
 from processors.inputs_processor import InputsProcessor
-from processors.ball_movement_processor import BallMovementProcessor
-from processors.ball_collision_processor import BallCollisionProcessor
+from processors.ball_movement_processor import BallXMovementProcessor, BallYMovementProcessor
+from processors.ball_collision_processor import BallXCollisionProcessor, BallYCollisionProcessor
 
 class Engine:
 
@@ -43,7 +43,7 @@ class Engine:
 
         player = esper.create_entity()
         esper.add_component(player, Position(10, 10))
-        esper.add_component(player, RenderableRectangle(10, 30))
+        esper.add_component(player, RenderableRectangle(50, 50)) # (10, 30)
         esper.add_component(player, Color(255, 255, 255))
         esper.add_component(player, Velocity(2))
 
@@ -69,19 +69,20 @@ class Engine:
 
         # PROCESSORS
 
-        input_processor = InputsProcessor(inputs = inputs)
-        player_movement_processor = PlayerMovementProcessor(player_entity = player, inputs = inputs)
-        renderable_rectangle_processor = RenderableRectangleProcessor(screen = self._screen)
-        ball_movement_processor = BallMovementProcessor(ball)
-        ball_collision_processor = BallCollisionProcessor(ball, player, enemy)
+        # TODO: fix inputs paramteter name from "inputs" to "inputs_entity"
         player_movement_processor = PlayerMovementProcessor(player_entity = player, inputs_entity = inputs)
+    
+        ball_x_movement_processor = BallXMovementProcessor(ball_entity = ball)
+        ball_x_collision_processor = BallXCollisionProcessor(ball_entity = ball, player_entity = player, enemy_entity = enemy)
+        ball_y_movement_processor = BallYMovementProcessor(ball_entity = ball)
+        ball_y_collision_processor = BallYCollisionProcessor(ball_entity = ball, player_entity = player, enemy_entity = enemy)
 
         input_processor = InputsProcessor(inputs_entity = inputs)
+        renderable_rectangle_processor = RenderableRectangleProcessor(screen = self._screen)    
         # EVENTS
 
-        # TODO: add event configuration for collision managment
-        esper.set_handler(Event.ball_horizontal_collision, ball_movement_processor.invert_ball_horizontal_direction)
-        esper.set_handler(Event.ball_vertical_collision, ball_movement_processor.invert_ball_vertical_direction)
+        esper.set_handler(Event.ball_horizontal_collision, ball_x_movement_processor.invert_ball_horizontal_direction)
+        esper.set_handler(Event.ball_vertical_collision, ball_y_movement_processor.invert_ball_vertical_direction)
 
         # GAME LOOP
 
@@ -95,11 +96,12 @@ class Engine:
 
             input_processor.process()
             player_movement_processor.process()
-            ball_movement_processor.process()
-            ball_collision_processor.process()
+            ball_x_movement_processor.process()
+            ball_x_collision_processor.process()
+            ball_y_movement_processor.process()
+            ball_y_collision_processor.process()
 
             renderable_rectangle_processor.process()
             
-  
             pygame.display.flip()
             self._fps_clock.tick(self._fps)
