@@ -32,11 +32,15 @@ class BallXCollisionProcessor(esper.Processor):
             esper.dispatch_event(Event.ball_horizontal_collision)
 
         ball_player_collision_check: bool = util_rectangle_collide_check(ball_position_component, ball_rectangle, player_position_component, player_rectangle)
+        ball_enemy_collision_check: bool = util_rectangle_collide_check(ball_position_component, ball_rectangle, enemy_position_component, enemy_rectangle)
         
         if ball_player_collision_check:
             util_handle_horizontal_collision(ball_position_component, ball_rectangle, player_position_component, player_rectangle)
             esper.dispatch_event(Event.ball_horizontal_collision)
-            
+        if ball_enemy_collision_check:
+            util_handle_horizontal_collision(ball_position_component, ball_rectangle, enemy_position_component, enemy_rectangle)
+            esper.dispatch_event(Event.ball_horizontal_collision)    
+
 class BallYCollisionProcessor(esper.Processor):
 
     def __init__(self, ball_entity, player_entity, enemy_entity):
@@ -66,7 +70,11 @@ class BallYCollisionProcessor(esper.Processor):
             esper.dispatch_event(Event.ball_vertical_collision)
 
         ball_player_collision_check: bool = util_rectangle_collide_check(ball_position_component, ball_rectangle, player_position_component, player_rectangle)
-        
+        ball_enemy_collision_check: bool = util_rectangle_collide_check(ball_position_component, ball_rectangle, enemy_position_component, enemy_rectangle)
+
         if ball_player_collision_check:
             util_handle_vertical_collision(ball_position_component, ball_rectangle, player_position_component, player_rectangle)
+            esper.dispatch_event(Event.ball_vertical_collision)
+        if ball_enemy_collision_check:
+            util_handle_vertical_collision(ball_position_component, ball_rectangle, enemy_position_component, enemy_rectangle)
             esper.dispatch_event(Event.ball_vertical_collision)
