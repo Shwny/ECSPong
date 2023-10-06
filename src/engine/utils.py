@@ -24,6 +24,17 @@ def util_handle_horizontal_collision(entity1_position: Position,
                                 entity1_dimensions: RenderableRectangle,
                                 entity2_position: Position,
                                 entity2_dimensions: RenderableRectangle) -> None:
+    # Left-side collision
+    if entity1_position.x < entity2_position.x:
+        entity1_position.x = entity2_position.x - entity1_dimensions.w    
+    # Right-side collision
+    elif entity1_position.x > entity2_position.x:
+        entity1_position.x = entity2_position.x + entity2_dimensions.w
+
+def util_handle_vertical_collision(entity1_position: Position, 
+                                entity1_dimensions: RenderableRectangle,
+                                entity2_position: Position,
+                                entity2_dimensions: RenderableRectangle) -> None:
     # Bottom-side collision
     if entity1_position.y < entity2_position.y:
         entity1_position.y = entity2_position.y - entity1_dimensions.h

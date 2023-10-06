@@ -1,7 +1,7 @@
 import logging
 import esper
 from components.components import Position, RenderableRectangle, Event
-from engine.utils import util_rectangle_collide_check
+from engine.utils import util_rectangle_collide_check, util_handle_horizontal_collision, util_handle_vertical_collision
 
 class BallXCollisionProcessor(esper.Processor):
 
@@ -34,12 +34,7 @@ class BallXCollisionProcessor(esper.Processor):
         ball_player_collision_check: bool = util_rectangle_collide_check(ball_position_component, ball_rectangle, player_position_component, player_rectangle)
         
         if ball_player_collision_check:
-            # Left-side collision
-            if ball_position_component.x < player_position_component.x:
-                ball_position_component.x = player_position_component.x - ball_rectangle.w    
-            # Right-side collision
-            elif ball_position_component.x > player_position_component.x:
-                ball_position_component.x = player_position_component.x + player_rectangle.w
+            util_handle_horizontal_collision(ball_position_component, ball_rectangle, player_position_component, player_rectangle)
             esper.dispatch_event(Event.ball_horizontal_collision)
             
 class BallYCollisionProcessor(esper.Processor):
@@ -73,10 +68,5 @@ class BallYCollisionProcessor(esper.Processor):
         ball_player_collision_check: bool = util_rectangle_collide_check(ball_position_component, ball_rectangle, player_position_component, player_rectangle)
         
         if ball_player_collision_check:
-            # Bottom-side collision
-            if ball_position_component.y < player_position_component.y:
-                ball_position_component.y = player_position_component.y - ball_rectangle.h
-            # Top-side collision
-            elif ball_position_component.y > player_position_component.y:
-                ball_position_component.y = player_position_component.y + player_rectangle.h
+            util_handle_vertical_collision(ball_position_component, ball_rectangle, player_position_component, player_rectangle)
             esper.dispatch_event(Event.ball_vertical_collision)
