@@ -1,6 +1,6 @@
 import logging
 import esper
-from components.components import Position, RenderableRectangle, Event
+from components.components import Position, RenderableRectangle, Event, EntityType
 from engine.utils import util_rectangle_collide_check, util_handle_horizontal_collision, util_handle_vertical_collision
 
 class BallXCollisionProcessor(esper.Processor):
@@ -28,8 +28,18 @@ class BallXCollisionProcessor(esper.Processor):
         assert(player_rectangle != None)
         assert(enemy_rectangle != None)
 
-        if ball_position_component.x < 0 or ball_position_component.x > 630:
+        # TODO: implement behaviour for:
+        #   - [X] score point -> UI / LOGIC 
+        #   - [ ] timer countdown -> UI / LOGIC
+        #   - [ ] (collision system rework -> LOGIC)    
+        
+        if ball_position_component.x < 0:
             esper.dispatch_event(Event.ball_horizontal_collision)
+            esper.dispatch_event(Event.score_point, EntityType.enemy)
+
+        if ball_position_component.x > 630:
+            esper.dispatch_event(Event.ball_horizontal_collision)
+            esper.dispatch_event(Event.score_point, EntityType.player)
 
         ball_player_collision_check: bool = util_rectangle_collide_check(ball_position_component, ball_rectangle, player_position_component, player_rectangle)
         ball_enemy_collision_check: bool = util_rectangle_collide_check(ball_position_component, ball_rectangle, enemy_position_component, enemy_rectangle)

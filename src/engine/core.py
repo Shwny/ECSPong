@@ -4,12 +4,14 @@ import sys
 import random
 import logging
 
-from components.components import Position, RenderableRectangle, Color, Inputs, Velocity, Direction, CurrentDirection, Event
+from components.components import *
 from processors.renderable_rectangle_processor import RenderableRectangleProcessor
 from processors.player_movement_processor import PlayerMovementProcessor
 from processors.inputs_processor import InputsProcessor
 from processors.ball_movement_processor import BallXMovementProcessor, BallYMovementProcessor
 from processors.ball_collision_processor import BallXCollisionProcessor, BallYCollisionProcessor
+from processors.score_processor import ScoreProcessor
+from processors.timers_processor import TimersProcessor
 
 class Engine:
 
@@ -24,6 +26,7 @@ class Engine:
         pygame.init()
 
         # Window title
+        pygame.display.set_caption('ECSPong')
         
         # Window managment related stuff
         self._window_width: int = 640
@@ -36,44 +39,78 @@ class Engine:
         self._fps_clock: pygame.Clock = pygame.time.Clock()
         self._fps: int = 60
 
+        # Font loading
+        self._monogram_font = pygame.font.Font('assets/monogram.ttf', 50)
+
     # GAME EXECUTION
 
     def run(self) -> None:
 
         # COMPONENTS
+        
+        # SYSTEM DATA
 
         inputs = esper.create_entity()
         esper.add_component(inputs, Inputs())
 
+        delta_time = esper.create_entity()
+        esper.add_component(delta_time, DeltaTime())
+
+        # ENTITIES
+
         player = esper.create_entity()
-        esper.add_component(player, Position(10, 10))
-        esper.add_component(player, RenderableRectangle(10, 50))
-        esper.add_component(player, Color(255, 255, 255))
-        esper.add_component(player, Velocity(2))
+        esper.add_component(player, Position(x = 10, y = 10))
+        esper.add_component(player, RenderableRectangle(w = 10, h = 50))
+        esper.add_component(player, Color(r = 255, g = 255, b = 255))
+        esper.add_component(player, Velocity(value = 2))
 
         enemy = esper.create_entity()
-        esper.add_component(enemy, Position(620, 10))
-        esper.add_component(enemy, RenderableRectangle(10, 50))
-        esper.add_component(enemy, Color(255, 255, 255))
-        esper.add_component(enemy, Velocity(2))
+        esper.add_component(enemy, Position(x = 620, y = 10))
+        esper.add_component(enemy, RenderableRectangle(w = 10, h = 50))
+        esper.add_component(enemy, Color(r = 255, g = 255, b = 255))
+        esper.add_component(enemy, Velocity(value = 2))
 
         ball = esper.create_entity()
-        esper.add_component(ball, Position(315, 175))
-        esper.add_component(ball, RenderableRectangle(10, 10))
-        esper.add_component(ball, Color(255, 255, 255))
-        esper.add_component(ball, Velocity(4))
+        esper.add_component(ball, Position(x = 315, y = 175))
+        esper.add_component(ball, RenderableRectangle(w = 10, h = 10))
+        esper.add_component(ball, Color(r = 255, g = 255, b = 255))
+        esper.add_component(ball, Velocity(value = 4))
         random_value_for_vertical_direction: Direction = random.choice([Direction.up, Direction.down])
         random_value_for_horizontal_direction: Direction = random.choice([Direction.left, Direction.right])
         esper.add_component(ball, CurrentDirection(horizontal_value = random_value_for_horizontal_direction, vertical_value = random_value_for_vertical_direction))
 
+        # STATIC GEOMETRY
+
         central_line = esper.create_entity()
-        esper.add_component(central_line, Position(319, 0))
-        esper.add_component(central_line, RenderableRectangle(1, 360))
-        esper.add_component(central_line, Color(255, 255, 255))
+        esper.add_component(central_line, Position(x = 319, y = 0))
+        esper.add_component(central_line, RenderableRectangle(w = 1, h = 360))
+        esper.add_component(central_line, Color(r = 255, g = 255, b = 255))
+
+        # GUI
+
+        score_points_for_player = esper.create_entity()
+        esper.add_component(score_points_for_player, Position(10, 10))
+        esper.add_component(score_points_for_player, GuiElement(string_value = '0'))
+
+        score_points_for_enemy = esper.create_entity()
+        esper.add_component(score_points_for_player, Position(580, 10))
+        esper.add_component(score_points_for_enemy, GuiElement(string_value = '0'))
+
+        countdown_timer = esper.create_entity()
+        esper.add_component(score_points_for_player, Position(295, 10))
+        esper.add_component(countdown_timer, GuiElement(string_value = '0'))
+
+        # TIMERS
+        
+        timer_score_point = esper.create_entity()
+        esper.add_component(timer_score_point, Timer(total_duration = 4000))
 
         # PROCESSORS
 
-        # TODO: fix inputs paramteter name from "inputs" to "inputs_entity"
+        timers_processor = TimersProcessor(delta_time)
+        input_processor = InputsProcessor(inputs_entity = inputs)
+        renderable_rectangle_processor = RenderableRectangleProcessor(screen = self._screen)
+        
         player_movement_processor = PlayerMovementProcessor(player_entity = player, inputs_entity = inputs)
     
         ball_x_movement_processor = BallXMovementProcessor(ball_entity = ball)
@@ -81,12 +118,17 @@ class Engine:
         ball_y_movement_processor = BallYMovementProcessor(ball_entity = ball)
         ball_y_collision_processor = BallYCollisionProcessor(ball_entity = ball, player_entity = player, enemy_entity = enemy)
 
-        input_processor = InputsProcessor(inputs_entity = inputs)
-        renderable_rectangle_processor = RenderableRectangleProcessor(screen = self._screen)    
+          
+
+        score_processor = ScoreProcessor(timer_score_point_entity = timer_score_point, 
+                                         score_points_for_player_entity = score_points_for_player, 
+                                         score_points_for_enemy_entity = score_points_for_enemy)
+        
         # EVENTS
 
         esper.set_handler(Event.ball_horizontal_collision, ball_x_movement_processor.invert_ball_horizontal_direction)
         esper.set_handler(Event.ball_vertical_collision, ball_y_movement_processor.invert_ball_vertical_direction)
+        esper.set_handler(Event.score_point, score_processor.activate_score_timer_and_update_score)
 
         # GAME LOOP
 
@@ -99,6 +141,7 @@ class Engine:
                   sys.exit()
 
             input_processor.process()
+            timers_processor.process()
             player_movement_processor.process()
             ball_x_movement_processor.process()
             ball_x_collision_processor.process()
@@ -108,4 +151,7 @@ class Engine:
             renderable_rectangle_processor.process()
             
             pygame.display.flip()
-            self._fps_clock.tick(self._fps)
+
+            delta_time_component = esper.try_component(delta_time, DeltaTime)
+            assert(delta_time_component != None)
+            delta_time_component.value = self._fps_clock.tick(self._fps)

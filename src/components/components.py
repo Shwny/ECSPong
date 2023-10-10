@@ -1,11 +1,15 @@
+import pygame
 from enum import Enum
 from dataclasses import dataclass as component
 
 # ENUMS 
 
 class Event(Enum):
+
+    # Ball events
     ball_horizontal_collision = 1
     ball_vertical_collision = 2
+    score_point = 3
 
 class Direction(Enum):
     none = None
@@ -13,6 +17,12 @@ class Direction(Enum):
     down = 1
     left = 2
     right = 3
+
+class EntityType(Enum):
+    void = 0
+    ball = 1
+    player = 2
+    enemy = 3
 
 # COMPONENTS
 
@@ -36,6 +46,10 @@ class RenderableRectangle:
     h: int = 0
 
 @component
+class GuiElement:
+    string_value: str = ''
+        
+@component
 class Color:
     r: int = 0
     g: int = 0
@@ -45,3 +59,14 @@ class Color:
 class Inputs:
     up: bool = False
     down: bool = False
+
+@component 
+class DeltaTime:
+    value: int = 0
+
+@component
+class Timer:
+    total_duration: int = 0
+    current_value_integer: int = 0
+    current_value_millis: int = 0
+    active: bool = False
