@@ -13,7 +13,6 @@ class ScoreProcessor(esper.Processor):
     def process(self):
         pass
         
-    # FIXME: currently the player score component seems to be == to None (line 26). NANI DAFUQ
     def activate_score_timer_and_update_score(self, scoring_entity: EntityType):
         score_timer_component: Timer = esper.try_component(self._timer_score_point_entity, Timer)
         assert(score_timer_component != None)
@@ -25,11 +24,9 @@ class ScoreProcessor(esper.Processor):
                 score_player_component: GuiElement = esper.try_component(self._score_points_for_player_entity, GuiElement)
                 assert(score_player_component != None)
                 score_player_component.string_value = str(int(score_player_component.string_value) + 1)
-                print(f"Player scored! New score = {score_player_component.string_value}" )
                 
             case EntityType.enemy:
                 score_enemy_component: GuiElement = esper.try_component(self._score_points_for_enemy_entity, GuiElement)
                 assert(score_enemy_component != None)
                 score_enemy_component.string_value = str(int(score_enemy_component.string_value) + 1)
-                print(f"Enemy scored! New score = {score_enemy_component.string_value}" )
-        
+                

@@ -12,6 +12,7 @@ from processors.ball_movement_processor import BallXMovementProcessor, BallYMove
 from processors.ball_collision_processor import BallXCollisionProcessor, BallYCollisionProcessor
 from processors.score_processor import ScoreProcessor
 from processors.timers_processor import TimersProcessor
+from processors.gui_elements_processor import GuiElementsProcessor
 
 class Engine:
 
@@ -89,16 +90,16 @@ class Engine:
         # GUI
 
         score_points_for_player = esper.create_entity()
-        esper.add_component(score_points_for_player, Position(10, 10))
+        esper.add_component(score_points_for_player, Position(50, 10))
         esper.add_component(score_points_for_player, GuiElement(string_value = '0'))
 
         score_points_for_enemy = esper.create_entity()
-        esper.add_component(score_points_for_player, Position(580, 10))
+        esper.add_component(score_points_for_enemy, Position(580, 10))
         esper.add_component(score_points_for_enemy, GuiElement(string_value = '0'))
 
-        countdown_timer = esper.create_entity()
-        esper.add_component(score_points_for_player, Position(295, 10))
-        esper.add_component(countdown_timer, GuiElement(string_value = '0'))
+        #countdown_timer = esper.create_entity()
+        #esper.add_component(countdown_timer, Position(295, 10))
+        #esper.add_component(countdown_timer, GuiElement(string_value = '0'))
 
         # TIMERS
         
@@ -109,8 +110,9 @@ class Engine:
 
         timers_processor = TimersProcessor(delta_time)
         input_processor = InputsProcessor(inputs_entity = inputs)
-        renderable_rectangle_processor = RenderableRectangleProcessor(screen = self._screen)
-        
+
+        ## UPDATES
+
         player_movement_processor = PlayerMovementProcessor(player_entity = player, inputs_entity = inputs)
     
         ball_x_movement_processor = BallXMovementProcessor(ball_entity = ball)
@@ -118,11 +120,14 @@ class Engine:
         ball_y_movement_processor = BallYMovementProcessor(ball_entity = ball)
         ball_y_collision_processor = BallYCollisionProcessor(ball_entity = ball, player_entity = player, enemy_entity = enemy)
 
-          
-
         score_processor = ScoreProcessor(timer_score_point_entity = timer_score_point, 
                                          score_points_for_player_entity = score_points_for_player, 
                                          score_points_for_enemy_entity = score_points_for_enemy)
+        
+        ## DRAWS
+
+        renderable_rectangle_processor = RenderableRectangleProcessor(screen = self._screen)
+        gui_element_processor = GuiElementsProcessor(screen = self._screen, font = self._monogram_font)
         
         # EVENTS
 
@@ -133,13 +138,12 @@ class Engine:
         # GAME LOOP
 
         while True:
-            self._screen.fill((0, 0, 0))
-  
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                   pygame.quit()
                   sys.exit()
 
+            # UPDATES
             input_processor.process()
             timers_processor.process()
             player_movement_processor.process()
@@ -148,10 +152,13 @@ class Engine:
             ball_y_movement_processor.process()
             ball_y_collision_processor.process()
 
+            # DRAWS
+            self._screen.fill((0, 0, 0))
+            gui_element_processor.process()
             renderable_rectangle_processor.process()
-            
             pygame.display.flip()
 
+            # FINAL CHECKS FOR CURRENT FRAME
             delta_time_component = esper.try_component(delta_time, DeltaTime)
             assert(delta_time_component != None)
             delta_time_component.value = self._fps_clock.tick(self._fps)
