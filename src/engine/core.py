@@ -127,9 +127,7 @@ class Engine:
         ball_y_movement_processor = BallYMovementProcessor(ball_entity = ball)
         ball_y_collision_processor = BallYCollisionProcessor(ball_entity = ball, player_entity = player, enemy_entity = enemy)
 
-        score_processor = ScoreProcessor(timer_score_point_entity = timer_score_point, 
-                                         score_points_for_player_entity = score_points_for_player, 
-                                         score_points_for_enemy_entity = score_points_for_enemy)
+        score_processor = ScoreProcessor(timer_score_point_entity = timer_score_point, score_points_for_player_entity = score_points_for_player, score_points_for_enemy_entity = score_points_for_enemy)
         
         ## DRAWS
 
