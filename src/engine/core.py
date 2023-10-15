@@ -64,19 +64,19 @@ class Engine:
         esper.add_component(player, Position(x = 10, y = 10))
         esper.add_component(player, RenderableRectangle(w = 10, h = 50))
         esper.add_component(player, Color(r = 255, g = 255, b = 255))
-        esper.add_component(player, Velocity(value = 2))
+        esper.add_component(player, Velocity(value = 160))
 
         enemy = esper.create_entity()
         esper.add_component(enemy, Position(x = 620, y = 10))
         esper.add_component(enemy, RenderableRectangle(w = 10, h = 50))
         esper.add_component(enemy, Color(r = 255, g = 255, b = 255))
-        esper.add_component(enemy, Velocity(value = 2))
+        esper.add_component(enemy, Velocity(value = 160))
 
         ball = esper.create_entity()
         esper.add_component(ball, Position(x = 315, y = 175))
         esper.add_component(ball, RenderableRectangle(w = 10, h = 10))
         esper.add_component(ball, Color(r = 255, g = 255, b = 255))
-        esper.add_component(ball, Velocity(value = 4))
+        esper.add_component(ball, Velocity(value = 260))
         random_value_for_vertical_direction: Direction = random.choice([Direction.up, Direction.down])
         random_value_for_horizontal_direction: Direction = random.choice([Direction.left, Direction.right])
         esper.add_component(ball, CurrentDirection(horizontal_value = random_value_for_horizontal_direction, vertical_value = random_value_for_vertical_direction))
@@ -102,16 +102,14 @@ class Engine:
         esper.add_component(score_points_for_enemy, CustomFont(value = self._monogram_font))
         esper.add_component(score_points_for_enemy, ActiveElement(value = True))
         
-        countdown_timer = esper.create_entity()
-        esper.add_component(countdown_timer, Position(295, 10))
-        esper.add_component(countdown_timer, GuiElement(string_value = '0'))
-        esper.add_component(countdown_timer, CustomFont(value = self._monogram_font_big))
-        esper.add_component(countdown_timer, ActiveElement(value = False))
-
         # TIMERS
         
         timer_score_point = esper.create_entity()
         esper.add_component(timer_score_point, Timer(total_duration = 4000))
+        esper.add_component(timer_score_point, Position(295, 10))
+        esper.add_component(timer_score_point, GuiElement(string_value = '0'))
+        esper.add_component(timer_score_point, CustomFont(value = self._monogram_font_big))
+        esper.add_component(timer_score_point, ActiveElement(value = False))
 
         # PROCESSORS
 
@@ -120,11 +118,11 @@ class Engine:
 
         ## UPDATES
 
-        player_movement_processor = PlayerMovementProcessor(player_entity = player, inputs_entity = inputs)
+        player_movement_processor = PlayerMovementProcessor(player_entity = player, inputs_entity = inputs, delta_time_entity = delta_time)
     
-        ball_x_movement_processor = BallXMovementProcessor(ball_entity = ball)
+        ball_x_movement_processor = BallXMovementProcessor(ball_entity = ball, delta_time_entity = delta_time)
         ball_x_collision_processor = BallXCollisionProcessor(ball_entity = ball, player_entity = player, enemy_entity = enemy)
-        ball_y_movement_processor = BallYMovementProcessor(ball_entity = ball)
+        ball_y_movement_processor = BallYMovementProcessor(ball_entity = ball, delta_time_entity = delta_time)
         ball_y_collision_processor = BallYCollisionProcessor(ball_entity = ball, player_entity = player, enemy_entity = enemy)
 
         score_processor = ScoreProcessor(timer_score_point_entity = timer_score_point, score_points_for_player_entity = score_points_for_player, score_points_for_enemy_entity = score_points_for_enemy)
@@ -166,4 +164,4 @@ class Engine:
             # FINAL CHECKS FOR CURRENT FRAME
             delta_time_component = esper.try_component(delta_time, DeltaTime)
             assert(delta_time_component != None)
-            delta_time_component.value = self._fps_clock.tick(self._fps)
+            delta_time_component.value = self._fps_clock.tick(self._fps) / 1000
