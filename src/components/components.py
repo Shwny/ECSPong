@@ -48,6 +48,14 @@ class RenderableRectangle:
 @component
 class GuiElement:
     string_value: str = ''
+
+@component
+class CustomFont:
+    value: pygame.font.Font = None
+
+@component 
+class ActiveElement:
+    value: bool = True
         
 @component
 class Color:

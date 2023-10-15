@@ -42,6 +42,7 @@ class Engine:
 
         # Font loading
         self._monogram_font = pygame.font.Font('assets/monogram.ttf', 50)
+        self._monogram_font_big = pygame.font.Font('assets/monogram.ttf', 150)
 
     # GAME EXECUTION
 
@@ -92,14 +93,20 @@ class Engine:
         score_points_for_player = esper.create_entity()
         esper.add_component(score_points_for_player, Position(50, 10))
         esper.add_component(score_points_for_player, GuiElement(string_value = '0'))
+        esper.add_component(score_points_for_player, CustomFont(value = self._monogram_font))
+        esper.add_component(score_points_for_player, ActiveElement(value = True))
 
         score_points_for_enemy = esper.create_entity()
         esper.add_component(score_points_for_enemy, Position(580, 10))
         esper.add_component(score_points_for_enemy, GuiElement(string_value = '0'))
-
-        #countdown_timer = esper.create_entity()
-        #esper.add_component(countdown_timer, Position(295, 10))
-        #esper.add_component(countdown_timer, GuiElement(string_value = '0'))
+        esper.add_component(score_points_for_enemy, CustomFont(value = self._monogram_font))
+        esper.add_component(score_points_for_enemy, ActiveElement(value = True))
+        
+        countdown_timer = esper.create_entity()
+        esper.add_component(countdown_timer, Position(295, 10))
+        esper.add_component(countdown_timer, GuiElement(string_value = '0'))
+        esper.add_component(countdown_timer, CustomFont(value = self._monogram_font_big))
+        esper.add_component(countdown_timer, ActiveElement(value = False))
 
         # TIMERS
         
@@ -127,7 +134,7 @@ class Engine:
         ## DRAWS
 
         renderable_rectangle_processor = RenderableRectangleProcessor(screen = self._screen)
-        gui_element_processor = GuiElementsProcessor(screen = self._screen, font = self._monogram_font)
+        gui_element_processor = GuiElementsProcessor(screen = self._screen)
         
         # EVENTS
 
