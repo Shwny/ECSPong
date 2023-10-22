@@ -2,4 +2,4 @@ from engine.core import Engine
 
 engine = Engine()
 
-engine.run_game()
+engine.run_game_menu()

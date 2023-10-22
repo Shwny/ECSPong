@@ -14,7 +14,8 @@ from processors.ball_collision_processor import BallXCollisionProcessor, BallYCo
 from processors.score_processor import ScoreProcessor
 from processors.reset_processor import ResetProcessor
 from processors.timers_processor import TimersProcessor
-from processors.gui_elements_processor import GuiElementsProcessor
+from processors.gui_elements_game_processor import GuiElementsGameProcessor
+from processors.gui_elements_menu_processor import GuiElementsMenuProcessor
 
 class Engine:
 
@@ -45,6 +46,61 @@ class Engine:
         # Font loading
         self._monogram_font = pygame.font.Font('assets/monogram.ttf', 50)
         self._monogram_font_big = pygame.font.Font('assets/monogram.ttf', 150)
+
+    # GAME MENU
+
+    def run_game_menu(self) -> None:
+
+        # COMPONENTS
+        
+        # SYSTEM DATA
+
+        delta_time = esper.create_entity()
+        esper.add_component(delta_time, DeltaTime())
+
+        # GUI
+
+        main_menu_title = esper.create_entity()
+        esper.add_component(main_menu_title, Position(50, 50))
+        esper.add_component(main_menu_title, GuiElement(string_value = 'ECSPong'))
+        esper.add_component(main_menu_title, CustomFont(value = self._monogram_font_big))
+        esper.add_component(main_menu_title, ActiveElement(value = True))
+
+        main_menu_play_option = esper.create_entity()
+        esper.add_component(main_menu_play_option, Position(50, 200))
+        esper.add_component(main_menu_play_option, GuiElement(string_value = 'Play'))
+        esper.add_component(main_menu_play_option, CustomFont(value = self._monogram_font))
+        esper.add_component(main_menu_play_option, GuiElementSelected(value = True, color = (255, 0, 0)))
+        esper.add_component(main_menu_play_option, ActiveElement(value = True))
+
+        main_menu_quit_option = esper.create_entity()
+        esper.add_component(main_menu_quit_option, Position(50, 240))
+        esper.add_component(main_menu_quit_option, GuiElement(string_value = 'Quit'))
+        esper.add_component(main_menu_quit_option, CustomFont(value = self._monogram_font))
+        esper.add_component(main_menu_quit_option, GuiElementSelected(value = False, color = (255, 0, 0)))
+        esper.add_component(main_menu_quit_option, ActiveElement(value = True))
+
+        # PROCESSORS
+
+        gui_element_processor = GuiElementsMenuProcessor(screen = self._screen)
+        
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+                  pygame.quit()
+                  sys.exit()
+
+            # UPDATES
+            gui_element_processor.process()
+
+            # DRAWS
+            pygame.display.flip()
+
+            # FINAL CHECKS FOR CURRENT FRAME
+            delta_time_component = esper.try_component(delta_time, DeltaTime)
+            assert(delta_time_component != None)
+            delta_time_component.value = self._fps_clock.tick(self._fps) / 1000
+
 
     # GAME EXECUTION
 
@@ -118,7 +174,7 @@ class Engine:
         timers_processor = TimersProcessor(delta_time)
         input_processor = InputsProcessor(inputs_entity = inputs)
 
-        ## UPDATES
+        # UPDATES
 
         player_movement_processor = PlayerMovementProcessor(player_entity = player, inputs_entity = inputs, delta_time_entity = delta_time)
         enemy_movement_processor = EnemyMovementProcessor(enemy_entity = enemy, ball_entity = ball, inputs_entity = inputs, delta_time_entity = delta_time)
@@ -131,10 +187,10 @@ class Engine:
         score_processor = ScoreProcessor(timer_score_point_entity = timer_score_point, score_points_for_player_entity = score_points_for_player, score_points_for_enemy_entity = score_points_for_enemy)
         reset_processor = ResetProcessor(timer_score_point_entity = timer_score_point, player_entity = player, enemy_entity = enemy, ball_entity = ball)
 
-        ## DRAWS
+        # DRAWS
 
         renderable_rectangle_processor = RenderableRectangleProcessor(screen = self._screen)
-        gui_element_processor = GuiElementsProcessor(screen = self._screen)
+        gui_element_processor = GuiElementsGameProcessor(screen = self._screen)
         
         # EVENTS
 

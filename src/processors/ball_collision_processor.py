@@ -26,12 +26,7 @@ class BallXCollisionProcessor(esper.Processor):
 
         assert(ball_rectangle != None)
         assert(player_rectangle != None)
-        assert(enemy_rectangle != None)
-
-        # TODO: implement behaviour for:
-        #   - [X] score point -> UI / LOGIC 
-        #   - [ ] timer countdown -> UI / LOGIC
-        #   - [ ] (collision system rework -> LOGIC)    
+        assert(enemy_rectangle != None)  
         
         if ball_position_component.x < 0:
             esper.dispatch_event(Event.ball_horizontal_collision)

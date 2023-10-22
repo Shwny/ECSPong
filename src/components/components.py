@@ -1,5 +1,6 @@
 import pygame
 from enum import Enum
+from typing import Tuple
 from dataclasses import dataclass as component
 
 # ENUMS 
@@ -48,6 +49,11 @@ class RenderableRectangle:
 @component
 class GuiElement:
     string_value: str = ""
+
+@component
+class GuiElementSelected:
+    value: bool = False
+    color: Tuple = None
 
 @component
 class CustomFont:
