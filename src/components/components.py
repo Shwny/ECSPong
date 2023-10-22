@@ -47,7 +47,7 @@ class RenderableRectangle:
 
 @component
 class GuiElement:
-    string_value: str = ''
+    string_value: str = ""
 
 @component
 class CustomFont:
@@ -76,5 +76,6 @@ class DeltaTime:
 class Timer:
     total_duration: int = 0
     current_value_integer: int = 0
+    current_value_integer_countdown: int = 0
     current_value_millis: int = 0
     active: bool = False

@@ -12,6 +12,7 @@ from processors.inputs_processor import InputsProcessor
 from processors.ball_movement_processor import BallXMovementProcessor, BallYMovementProcessor
 from processors.ball_collision_processor import BallXCollisionProcessor, BallYCollisionProcessor
 from processors.score_processor import ScoreProcessor
+from processors.reset_processor import ResetProcessor
 from processors.timers_processor import TimersProcessor
 from processors.gui_elements_processor import GuiElementsProcessor
 
@@ -47,7 +48,7 @@ class Engine:
 
     # GAME EXECUTION
 
-    def run(self) -> None:
+    def run_game(self) -> None:
 
         # COMPONENTS
         
@@ -106,7 +107,7 @@ class Engine:
         # TIMERS
         
         timer_score_point = esper.create_entity()
-        esper.add_component(timer_score_point, Timer(total_duration = 4000))
+        esper.add_component(timer_score_point, Timer(total_duration = 400))
         esper.add_component(timer_score_point, Position(295, 10))
         esper.add_component(timer_score_point, GuiElement(string_value = '0'))
         esper.add_component(timer_score_point, CustomFont(value = self._monogram_font_big))
@@ -128,7 +129,8 @@ class Engine:
         ball_y_collision_processor = BallYCollisionProcessor(ball_entity = ball, player_entity = player, enemy_entity = enemy)
 
         score_processor = ScoreProcessor(timer_score_point_entity = timer_score_point, score_points_for_player_entity = score_points_for_player, score_points_for_enemy_entity = score_points_for_enemy)
-        
+        reset_processor = ResetProcessor(timer_score_point_entity = timer_score_point, player_entity = player, enemy_entity = enemy, ball_entity = ball)
+
         ## DRAWS
 
         renderable_rectangle_processor = RenderableRectangleProcessor(screen = self._screen)
@@ -157,6 +159,7 @@ class Engine:
             ball_x_collision_processor.process()
             ball_y_movement_processor.process()
             ball_y_collision_processor.process()
+            reset_processor.process()
 
             # DRAWS
             self._screen.fill((0, 0, 0))

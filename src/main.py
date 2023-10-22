@@ -2,4 +2,4 @@ from engine.core import Engine
 
 engine = Engine()
 
-engine.run()
+engine.run_game()
