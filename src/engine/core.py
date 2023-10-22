@@ -7,6 +7,7 @@ import logging
 from components.components import *
 from processors.renderable_rectangle_processor import RenderableRectangleProcessor
 from processors.player_movement_processor import PlayerMovementProcessor
+from processors.enemy_movement_processor import EnemyMovementProcessor
 from processors.inputs_processor import InputsProcessor
 from processors.ball_movement_processor import BallXMovementProcessor, BallYMovementProcessor
 from processors.ball_collision_processor import BallXCollisionProcessor, BallYCollisionProcessor
@@ -70,7 +71,7 @@ class Engine:
         esper.add_component(enemy, Position(x = 620, y = 10))
         esper.add_component(enemy, RenderableRectangle(w = 10, h = 50))
         esper.add_component(enemy, Color(r = 255, g = 255, b = 255))
-        esper.add_component(enemy, Velocity(value = 160))
+        esper.add_component(enemy, Velocity(value = 190))
 
         ball = esper.create_entity()
         esper.add_component(ball, Position(x = 315, y = 175))
@@ -119,6 +120,7 @@ class Engine:
         ## UPDATES
 
         player_movement_processor = PlayerMovementProcessor(player_entity = player, inputs_entity = inputs, delta_time_entity = delta_time)
+        enemy_movement_processor = EnemyMovementProcessor(enemy_entity = enemy, ball_entity = ball, inputs_entity = inputs, delta_time_entity = delta_time)
     
         ball_x_movement_processor = BallXMovementProcessor(ball_entity = ball, delta_time_entity = delta_time)
         ball_x_collision_processor = BallXCollisionProcessor(ball_entity = ball, player_entity = player, enemy_entity = enemy)
@@ -150,6 +152,7 @@ class Engine:
             input_processor.process()
             timers_processor.process()
             player_movement_processor.process()
+            enemy_movement_processor.process()
             ball_x_movement_processor.process()
             ball_x_collision_processor.process()
             ball_y_movement_processor.process()
