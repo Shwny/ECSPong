@@ -16,6 +16,7 @@ from processors.reset_processor import ResetProcessor
 from processors.timers_processor import TimersProcessor
 from processors.gui_elements_game_processor import GuiElementsGameProcessor
 from processors.gui_elements_menu_processor import GuiElementsMenuProcessor
+from processors.menu_processor import MenuProcessor
 
 class Engine:
 
@@ -55,6 +56,9 @@ class Engine:
         
         # SYSTEM DATA
 
+        inputs = esper.create_entity()
+        esper.add_component(inputs, Inputs())
+
         delta_time = esper.create_entity()
         esper.add_component(delta_time, DeltaTime())
 
@@ -80,9 +84,21 @@ class Engine:
         esper.add_component(main_menu_quit_option, GuiElementSelected(value = False, color = (255, 0, 0)))
         esper.add_component(main_menu_quit_option, ActiveElement(value = True))
 
+        entities_list_for_menu_list = [
+            main_menu_play_option,
+            main_menu_quit_option
+        ]
+        
+        main_menu_list = esper.create_entity()
+        esper.add_component(main_menu_list, MenuList(current_index = 0, entities_list = entities_list_for_menu_list))
+
         # PROCESSORS
 
+        input_processor = InputsProcessor(inputs_entity = inputs)
+
+        menu_processor = MenuProcessor(inputs_entity = inputs, menu_list = main_menu_list)
         gui_element_processor = GuiElementsMenuProcessor(screen = self._screen)
+
         
         while True:
             for event in pygame.event.get():
@@ -91,9 +107,11 @@ class Engine:
                   sys.exit()
 
             # UPDATES
-            gui_element_processor.process()
+            input_processor.process()
+            menu_processor.process()
 
             # DRAWS
+            gui_element_processor.process()
             pygame.display.flip()
 
             # FINAL CHECKS FOR CURRENT FRAME
@@ -225,5 +243,5 @@ class Engine:
 
             # FINAL CHECKS FOR CURRENT FRAME
             delta_time_component = esper.try_component(delta_time, DeltaTime)
-            assert(delta_time_component != None)
+            assert (delta_time_component != None)
             delta_time_component.value = self._fps_clock.tick(self._fps) / 1000

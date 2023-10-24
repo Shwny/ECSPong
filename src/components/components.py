@@ -1,7 +1,9 @@
 import pygame
+import esper
 from enum import Enum
 from typing import Tuple
 from dataclasses import dataclass as component
+from dataclasses import field
 
 # ENUMS 
 
@@ -54,6 +56,11 @@ class GuiElement:
 class GuiElementSelected:
     value: bool = False
     color: Tuple = None
+
+@component 
+class MenuList:
+    current_index: int = 0
+    entities_list: list = field(default_factory=list) 
 
 @component
 class CustomFont:
